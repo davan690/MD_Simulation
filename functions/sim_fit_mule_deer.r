@@ -253,7 +253,7 @@
 	)
 
 	source("C:/Users/josh.nowak/Documents/GitHub/Demo/helpers/gen_init.R")
-	inits <- replicate(3, get_init(dat, model_name = "cR_cjS_cfS_cmS_pe.txt"), 
+	inits <- replicate(3, gen_init(dat, model_name = "cR_cjS_cfS_cmS_pe.txt"), 
 					simplify = F)
 
 	parms <- c("mf", "yf", "Ntot", "Nf", "Nm", "Ny", "jS", "mS", "fS", "R", 
