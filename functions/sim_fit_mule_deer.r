@@ -108,6 +108,111 @@
         fec = matrix(c(0, 0, 0.55, 0.65), nrow = 2, byrow = T),
         prop.harv.mort = matrix(c(0.5, 0.5, 0.4, 0.9), nrow = 2)
 	)
+  
+#################################################################################
+  # Simulate multiple runs of model
+  # indexing year, age, sex
+  #
+  
+  nReps <- 1000
+  
+  jfSurv <- c(0.55, 0.60)
+  afSurv <- c(0.77, 0.93)
+  jmSurv <- c(0.55, 0.60)
+  amSurv <- c(0.60, 0.70)
+  
+  fec <- c( 0.55, 0.65 )
+  
+  harv <- c(0.5, 0.5, 0.4, 0.9 )
+  
+  x <- replicate( nReps, expr=PopSim2(
+        nyr = 15,
+        process.error = T,
+        phi.trends = c(0,0,0,0),
+        fec.trends = c(0, 0),
+        start.pop = c(524, 1215, 524, 633),
+        phi = matrix(c(jfSurv[1], jfSurv[2], afSurv[1], afSurv[2],
+                       jmSurv[1], jmSurv[2], amSurv[1], amSurv[2] ), nrow = 4,
+          byrow = T),
+        fec = matrix(c(0, 0, fec[1], fec[2]), nrow = 2, byrow = T),
+        prop.harv.mort = matrix(harv, nrow = 2)
+    ), simplify=FALSE
+  )
+  
+#################################################################################
+  # plot abundance by age and sex
+  # indexing year, age, sex
+  #
+  
+#  par( mfrow=c(2,1) )
+#  plot( x[[1]]$N[,1,1] ~ c( 1:dim(x$N)[1] ), type="l", xlab="Year", ylab="Female", ylim=c(0,2000) )
+#  lines( x[[1]]$N[,2,1] ~ c( 1:dim(x$N)[1] ), type="l", xlab="Year", ylim=c(0,2000) )  
+#  plot( x[[1]]$N[,1,2]~ c( 1:dim(x$N)[1] ), type="l", xlab="Year", ylab="Male", ylim=c(0,2000) )
+#  lines( x[[1]]$N[,2,2] ~ c( 1:dim(x$N)[1] ), type="l", xlab="Year", ylim=c(0,2000) )
+
+  par( mfrow=c(3,1) )
+  
+  maxY <- 0
+  for( i in 1:nReps ){
+    maxY <- max( maxY, max( x[[i]]$N ) )
+  }
+  # Adult males
+  plot( x[[1]]$N[,2,2]~ c( 1:dim(x[[1]]$N)[1] ), type="l", xlab="Year",
+        ylab="Male", ylim=c(0,maxY), col="grey" )
+  for( i in 2:nReps ){
+    lines( x[[i]]$N[,2,2] ~ c( 1:dim(x[[i]]$N)[1] ), type="l", xlab="Year",
+        col="grey" )
+  }
+  
+  # adult females
+  plot( x[[1]]$N[,2,1]~ c( 1:dim(x[[1]]$N)[1] ), type="l", xlab="Year", 
+        ylab="Female", ylim=c(0,maxY), col="darkred" )
+  for( i in 2:nReps ){
+    lines( x[[i]]$N[,2,1] ~ c( 1:dim(x[[i]]$N)[1] ), type="l", xlab="Year",
+        col="darkred" )
+  }
+  
+  # adult females
+  plot( apply( x[[1]]$N[,1,], 1, sum) ~ c( 1:dim(x[[1]]$N)[1] ), type="l", xlab="Year",
+        ylab="Young", ylim=c(0,maxY), col="#0F7dc3" )
+  for( i in 2:nReps ){
+    lines( apply( x[[i]]$N[,1,], 1, sum)  ~ c( 1:dim(x[[i]]$N)[1] ), type="l", xlab="Year",
+        col="#0F7dc3" )
+  }
+
+# on the same plot  
+par( mfrow=c(1,1) )
+  
+  maxY <- 0
+  for( i in 1:nReps ){
+    maxY <- max( maxY, max( x[[i]]$N ) )
+  }
+  # Adult males
+  plot( x[[1]]$N[,2,2]~ c( 1:dim(x[[1]]$N)[1] ), type="l", xlab="Year",
+        ylab="Abundance", ylim=c(0,maxY), col="grey" )
+    
+  # adult females
+  lines( x[[1]]$N[,2,1]~ c( 1:dim(x[[1]]$N)[1] ), type="l", xlab="Year", 
+        ylab="Female", ylim=c(0,maxY), col="darkred" )
+  for( i in 2:nReps ){
+    lines( x[[i]]$N[,2,1] ~ c( 1:dim(x[[i]]$N)[1] ), type="l", xlab="Year",
+        col="darkred" )
+  }
+  
+  # young
+  lines( apply( x[[1]]$N[,1,], 1, sum) ~ c( 1:dim(x[[1]]$N)[1] ), type="l", xlab="Year",
+        ylab="Young", ylim=c(0,maxY), col="#0F7dc3" )
+  for( i in 2:nReps ){
+    lines( apply( x[[i]]$N[,1,], 1, sum)  ~ c( 1:dim(x[[i]]$N)[1] ), type="l", xlab="Year",
+        col="#0F7dc3" )
+  }
+  # back to males
+  for( i in 2:nReps ){
+    lines( x[[i]]$N[,2,2] ~ c( 1:dim(x[[i]]$N)[1] ), type="l", xlab="Year",
+        col="grey" )
+  }
+  
+  
 #################################################################################
 	#  Gather data for jags
 	nyr <- dim(x$N)[1]
