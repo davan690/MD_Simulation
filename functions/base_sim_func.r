@@ -1,5 +1,14 @@
 #  Population simulation
       #  05/2015
+#
+# sets paths for computers with other software components
+# this code block produces an enviroment warning
+# but not sure how to sort depenancies still
+# Feb2020
+# myPaths <- .libPaths("C:/Program Files/R/R-3.6.2/library")
+# myPaths <- c(myPaths)
+# .libPaths(myPaths)  # add new path
+# .libPaths()
 ################################################################################
       #  Population simulation function takes a series of of inputs and returns
       #  an array with dimensions n years, 10, n sexes.
